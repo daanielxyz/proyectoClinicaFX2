@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane fx:id="tabPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="co.edu.uniquindio.poo.proyectoclinicafx.controladores.PanelPrincipalController">
+    <Tab text="Registrar Paciente" closable="false">
+        <VBox spacing="10">
+            <TextField fx:id="cedulaField" promptText="Cédula"/>
+            <TextField fx:id="nombreField" promptText="Nombre"/>
+            <TextField fx:id="telefonoField" promptText="Teléfono"/>
+            <TextField fx:id="emailField" promptText="Email"/>
+            <ComboBox fx:id="suscripcionCombo" promptText="Tipo de Suscripción"/>
+            <Button fx:id="registrarBtn" text="Registrar" onAction="#registrarPaciente"/>
+            <Label fx:id="mensajeLabel"/>
+        </VBox>
+    </Tab>
+    <Tab text="Listar Pacientes" closable="false">
+        <VBox spacing="10">
+            <Button fx:id="listarPacientesBtn" text="Listar Pacientes" onAction="#listarPacientes"/>
+            <TextArea fx:id="pacientesTextArea" editable="false"/>
+        </VBox>
+    </Tab>
+    <Tab text="Agendar Cita" closable="false">
+        <VBox spacing="10">
+            <TextField fx:id="idCitaField" promptText="ID de la Cita"/>
+            <TextField fx:id="fechaField" promptText="Fecha (YYYY-MM-DD HH:MM)"/>
+            <ComboBox fx:id="pacienteCombo" promptText="Seleccionar Paciente"/>
+            <ComboBox fx:id="servicioCombo" promptText="Seleccionar Servicio"/>
+            <Button fx:id="agendarBtn" text="Agendar" onAction="#agendarCita"/>
+            <Label fx:id="mensajeCitaLabel"/>
+        </VBox>
+    </Tab>
+    <Tab text="Listar Citas" closable="false">
+        <VBox spacing="10">
+            <Button fx:id="listarCitasBtn" text="Listar Citas" onAction="#listarCitas"/>
+            <TextArea fx:id="citasTextArea" editable="false"/>
+        </VBox>
+    </Tab>
+    <Tab text="Cancelar Cita" closable="false">
+        <VBox spacing="10">
+            <TextField fx:id="idCitaCancelarField" promptText="ID de la Cita"/>
+            <Button fx:id="cancelarCitaBtn" text="Cancelar Cita" onAction="#cancelarCita"/>
+            <Label fx:id="mensajeCancelarLabel"/>
+        </VBox>
+    </Tab>
+    <Tab text="Listar Servicios" closable="false">
+        <VBox spacing="10">
+            <Button fx:id="listarServiciosBtn" text="Listar Servicios" onAction="#listarServicios"/>
+            <TextArea fx:id="serviciosTextArea" editable="false"/>
+        </VBox>
+    </Tab>
+</TabPane>

@@ -1,0 +1,28 @@
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #f4f4f4;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #e0e0e0;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #ffffff;
+}
+
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+.label {
+    -fx-font-size: 14px;
+}
+
+.text-field, .combo-box {
+    -fx-pref-width: 200px;
+}
