@@ -5,5 +5,6 @@ import co.edu.uniquindio.poo.proyectoclinicafx.modelo.Servicio;
 
 public interface Suscripcion {
     Factura generarFacturaCobro(Servicio servicio);
+    boolean incluyeServicio(Servicio servicio);
 }
 

@@ -1,28 +1,118 @@
-.tab-pane .tab-header-area .tab-header-background {
-    -fx-background-color: #f4f4f4;
+/* Fondo general de la aplicación */
+.tab-pane {
+    -fx-background-color: #f5f7fa; /* Fondo gris claro */
 }
 
-.tab-pane .tab {
-    -fx-background-color: #e0e0e0;
+/* Estilo de las pestañas */
+.tab-pane .tab-header-area .tab {
+    -fx-background-color: #e1e8ed; /* Fondo de las pestañas inactivas */
+    -fx-text-fill: #333; /* Color del texto */
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-padding: 10px 20px;
 }
 
-.tab-pane .tab:selected {
-    -fx-background-color: #ffffff;
+.tab-pane .tab-header-area .tab:selected {
+    -fx-background-color: #ffffff; /* Fondo de la pestaña activa */
+    -fx-border-color: #007bff; /* Borde azul al seleccionar */
+    -fx-border-width: 0 0 2 0;
 }
 
+/* Contenedor principal de cada pestaña */
+.vbox {
+    -fx-alignment: center; /* Centrar contenido */
+    -fx-padding: 20px; /* Espaciado interno */
+    -fx-background-color: #ffffff; /* Fondo blanco para cada pestaña */
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); /* Sombra suave */
+}
+
+/* Estilo de los campos de texto */
+.text-field, .combo-box, .date-picker {
+    -fx-pref-width: 250px; /* Ancho uniforme */
+    -fx-background-color: #f9f9f9; /* Fondo claro */
+    -fx-border-color: #d1d3e2; /* Borde gris suave */
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-padding: 8px;
+}
+
+.text-field:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: #007bff; /* Borde azul al enfocar */
+}
+
+/* Estilo de los botones */
 .button {
-    -fx-background-color: #4CAF50;
+    -fx-background-color: #007bff; /* Azul profesional */
     -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
 }
 
 .button:hover {
-    -fx-background-color: #45a049;
+    -fx-background-color: #0056b3; /* Azul más oscuro al pasar el mouse */
 }
 
+/* Estilo de las etiquetas (mensajes) */
 .label {
     -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-text-fill: #333;
 }
 
-.text-field, .combo-box {
-    -fx-pref-width: 200px;
+/* Estilo de los TextArea */
+.text-area {
+    -fx-pref-height: 150px;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #d1d3e2;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+/* Estilo de la tabla */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d1d3e2;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+.table-view .column-header {
+    -fx-background-color: #007bff; /* Encabezado azul */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-cell {
+    -fx-alignment: center; /* Centrar contenido de las celdas */
+    -fx-border-color: #d1d3e2;
+}
+
+/* Estilo para el título "Servicios por Suscripción" */
+.title-label {
+    -fx-font-size: 16px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* Estilo del encabezado */
+.header-label {
+    -fx-font-size: 24px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+    -fx-text-fill: #007bff; /* Azul profesional */
+    -fx-padding: 10px;
 }

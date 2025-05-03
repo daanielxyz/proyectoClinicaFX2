@@ -16,4 +16,12 @@ public class SuscripcionPremium implements Suscripcion {
         }
         return new Factura(servicio, precioFinal);
     }
+
+    @Override
+    public boolean incluyeServicio(Servicio servicio) {
+        return servicio.getNombre().equals("Consulta General") ||
+                servicio.getNombre().equals("Examen de Laboratorio") ||
+                servicio.getNombre().equals("Radiografía") ||
+                servicio.getNombre().equals("Fisioterapia");
+    }
 }

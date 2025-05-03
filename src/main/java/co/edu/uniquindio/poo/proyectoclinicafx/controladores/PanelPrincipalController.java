@@ -3,12 +3,15 @@ package co.edu.uniquindio.poo.proyectoclinicafx.controladores;
 import co.edu.uniquindio.poo.proyectoclinicafx.modelo.Cita;
 import co.edu.uniquindio.poo.proyectoclinicafx.modelo.Paciente;
 import co.edu.uniquindio.poo.proyectoclinicafx.modelo.Servicio;
+import co.edu.uniquindio.poo.proyectoclinicafx.modelo.ServicioSuscripcionInfo;
 import co.edu.uniquindio.poo.proyectoclinicafx.modelo.factory.Suscripcion;
 import co.edu.uniquindio.poo.proyectoclinicafx.modelo.factory.SuscripcionFactory;
 import co.edu.uniquindio.poo.proyectoclinicafx.utils.Alerta;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.collections.FXCollections;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +32,7 @@ public class PanelPrincipalController {
     @FXML private TextArea pacientesTextArea;
 
     @FXML private DatePicker fechaPicker;
-    @FXML private ComboBox<String> horaCombo; // Cambiado de TextField a ComboBox
+    @FXML private ComboBox<String> horaCombo;
     @FXML private ComboBox<String> pacienteCombo;
     @FXML private ComboBox<String> servicioCombo;
     @FXML private Button agendarBtn;
@@ -45,19 +48,37 @@ public class PanelPrincipalController {
     @FXML private Button listarServiciosBtn;
     @FXML private TextArea serviciosTextArea;
 
+    @FXML private TableView<ServicioSuscripcionInfo> serviciosTable;
+    @FXML private TableColumn<ServicioSuscripcionInfo, String> nombreColumn;
+    @FXML private TableColumn<ServicioSuscripcionInfo, String> precioColumn;
+    @FXML private TableColumn<ServicioSuscripcionInfo, String> incluidoBasicaColumn;
+    @FXML private TableColumn<ServicioSuscripcionInfo, String> descuentoBasicaColumn;
+    @FXML private TableColumn<ServicioSuscripcionInfo, String> precioFinalBasicaColumn;
+    @FXML private TableColumn<ServicioSuscripcionInfo, String> incluidoPremiumColumn;
+    @FXML private TableColumn<ServicioSuscripcionInfo, String> descuentoPremiumColumn;
+    @FXML private TableColumn<ServicioSuscripcionInfo, String> precioFinalPremiumColumn;
+
     private ControladorPrincipal controladorPrincipal;
 
     @FXML
     public void initialize() {
-        // Hacer que el DatePicker no sea editable
         fechaPicker.setEditable(false);
-
-        // Llenar el ComboBox de horas (de 08:00 a 17:00 en intervalos de 30 minutos)
         horaCombo.setItems(FXCollections.observableArrayList(
                 "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
                 "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
                 "16:00", "16:30", "17:00"
         ));
+
+        if (serviciosTable != null) {
+            nombreColumn.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+            precioColumn.setCellValueFactory(new PropertyValueFactory<>("precio"));
+            incluidoBasicaColumn.setCellValueFactory(new PropertyValueFactory<>("incluidoBasica"));
+            descuentoBasicaColumn.setCellValueFactory(new PropertyValueFactory<>("descuentoBasica"));
+            precioFinalBasicaColumn.setCellValueFactory(new PropertyValueFactory<>("precioFinalBasica"));
+            incluidoPremiumColumn.setCellValueFactory(new PropertyValueFactory<>("incluidoPremium"));
+            descuentoPremiumColumn.setCellValueFactory(new PropertyValueFactory<>("descuentoPremium"));
+            precioFinalPremiumColumn.setCellValueFactory(new PropertyValueFactory<>("precioFinalPremium"));
+        }
     }
 
     public void setControladorPrincipal(ControladorPrincipal controladorPrincipal) {
@@ -125,7 +146,6 @@ public class PanelPrincipalController {
     @FXML
     public void agendarCita() {
         try {
-            // Validar que se haya seleccionado una hora
             if (horaCombo.getValue() == null) {
                 throw new Exception("Debe seleccionar una hora.");
             }
@@ -151,7 +171,7 @@ public class PanelPrincipalController {
             pacienteCombo.getSelectionModel().clearSelection();
             servicioCombo.getSelectionModel().clearSelection();
         } catch (Exception e) {
-            Alerta.mostrarError(e.getMessage());
+            Alerta.mostrarError("Error al agendar la cita: " + e.getMessage());
         }
     }
 
@@ -188,6 +208,7 @@ public class PanelPrincipalController {
 
     @FXML
     public void listarServicios() {
+
         StringBuilder sb = new StringBuilder();
         for (Servicio s : controladorPrincipal.listarServicios()) {
             sb.append("ID: ").append(s.getId())
@@ -196,5 +217,38 @@ public class PanelPrincipalController {
                     .append("\n");
         }
         serviciosTextArea.setText(sb.toString());
+
+
+        Suscripcion suscripcionBasica = SuscripcionFactory.crearSuscripcion("Basica");
+        Suscripcion suscripcionPremium = SuscripcionFactory.crearSuscripcion("Premium");
+
+        ObservableList<ServicioSuscripcionInfo> tableData = FXCollections.observableArrayList();
+        for (Servicio s : controladorPrincipal.listarServicios()) {
+
+            boolean incluidoBasica = suscripcionBasica.incluyeServicio(s);
+            boolean incluidoPremium = suscripcionPremium.incluyeServicio(s);
+
+
+            double precioOriginal = s.getPrecio();
+            double precioFinalBasica = suscripcionBasica.generarFacturaCobro(s).getTotal();
+            double precioFinalPremium = suscripcionPremium.generarFacturaCobro(s).getTotal();
+
+
+            double descuentoBasica = precioOriginal > 0 ? (precioOriginal - precioFinalBasica) / precioOriginal : 0.0;
+            double descuentoPremium = precioOriginal > 0 ? (precioOriginal - precioFinalPremium) / precioOriginal : 0.0;
+
+            tableData.add(new ServicioSuscripcionInfo(
+                    s.getNombre(),
+                    precioOriginal,
+                    incluidoBasica,
+                    descuentoBasica,
+                    precioFinalBasica,
+                    incluidoPremium,
+                    descuentoPremium,
+                    precioFinalPremium
+            ));
+        }
+
+        serviciosTable.setItems(tableData);
     }
 }
