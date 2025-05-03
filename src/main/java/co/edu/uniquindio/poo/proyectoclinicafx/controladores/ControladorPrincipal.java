@@ -54,7 +54,7 @@ public class ControladorPrincipal {
         return clinicaServicio.listarCitas();
     }
 
-    public void cancelarCita(String id) {
+    public void cancelarCita(String id) throws Exception {
         clinicaServicio.cancelarCita(id);
     }
 
@@ -62,11 +62,11 @@ public class ControladorPrincipal {
         return clinicaServicio.listarServicios();
     }
 
-    public Paciente buscarPacientePorCedula(String cedula) {
+    public Paciente buscarPacientePorCedula(String cedula) throws Exception {
         return clinicaServicio.buscarPacientePorCedula(cedula);
     }
 
-    public Servicio buscarServicioPorNombre(String nombre) {
+    public Servicio buscarServicioPorNombre(String nombre) throws Exception {
         return clinicaServicio.buscarServicioPorNombre(nombre);
     }
 }

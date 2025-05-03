@@ -5,27 +5,31 @@ import co.edu.uniquindio.poo.proyectoclinicafx.modelo.Paciente;
 import co.edu.uniquindio.poo.proyectoclinicafx.modelo.Servicio;
 import co.edu.uniquindio.poo.proyectoclinicafx.modelo.factory.Suscripcion;
 import co.edu.uniquindio.poo.proyectoclinicafx.modelo.factory.SuscripcionFactory;
+import co.edu.uniquindio.poo.proyectoclinicafx.utils.Alerta;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.collections.FXCollections;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
 
 public class PanelPrincipalController {
     @FXML private TextField cedulaField;
     @FXML private TextField nombreField;
     @FXML private TextField telefonoField;
     @FXML private TextField emailField;
-    @FXML
-    private ComboBox<String> suscripcionCombo;
+    @FXML private ComboBox<String> suscripcionCombo;
     @FXML private Button registrarBtn;
     @FXML private Label mensajeLabel;
 
     @FXML private Button listarPacientesBtn;
     @FXML private TextArea pacientesTextArea;
 
-    @FXML private TextField idCitaField;
-    @FXML private TextField fechaField;
+    @FXML private DatePicker fechaPicker;
+    @FXML private ComboBox<String> horaCombo; // Cambiado de TextField a ComboBox
     @FXML private ComboBox<String> pacienteCombo;
     @FXML private ComboBox<String> servicioCombo;
     @FXML private Button agendarBtn;
@@ -43,17 +47,41 @@ public class PanelPrincipalController {
 
     private ControladorPrincipal controladorPrincipal;
 
+    @FXML
+    public void initialize() {
+        // Hacer que el DatePicker no sea editable
+        fechaPicker.setEditable(false);
+
+        // Llenar el ComboBox de horas (de 08:00 a 17:00 en intervalos de 30 minutos)
+        horaCombo.setItems(FXCollections.observableArrayList(
+                "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
+                "16:00", "16:30", "17:00"
+        ));
+    }
+
     public void setControladorPrincipal(ControladorPrincipal controladorPrincipal) {
         this.controladorPrincipal = controladorPrincipal;
-        // Inicializar ComboBox después de asignar el controlador
         suscripcionCombo.getItems().addAll("Basica", "Premium");
-        pacienteCombo.getItems().addAll(controladorPrincipal.listarPacientes().stream().map(Paciente::getCedula).toList());
-        servicioCombo.getItems().addAll(controladorPrincipal.listarServicios().stream().map(Servicio::getNombre).toList());
+
+        List<Paciente> pacientes = controladorPrincipal.listarPacientes();
+        pacienteCombo.getItems().addAll(pacientes != null ?
+                pacientes.stream().map(Paciente::getCedula).toList() :
+                Collections.emptyList());
+
+        List<Servicio> servicios = controladorPrincipal.listarServicios();
+        servicioCombo.getItems().addAll(servicios != null ?
+                servicios.stream().map(Servicio::getNombre).toList() :
+                Collections.emptyList());
     }
 
     @FXML
     public void registrarPaciente() {
         try {
+            if (suscripcionCombo.getValue() == null) {
+                throw new Exception("Debe seleccionar un tipo de suscripción.");
+            }
+
             Suscripcion suscripcion = SuscripcionFactory.crearSuscripcion(suscripcionCombo.getValue());
             Paciente paciente = Paciente.builder()
                     .cedula(cedulaField.getText())
@@ -63,11 +91,22 @@ public class PanelPrincipalController {
                     .suscripcion(suscripcion)
                     .build();
             controladorPrincipal.registrarPaciente(paciente);
-            mensajeLabel.setText("Paciente registrado con éxito.");
+
+            Alerta.mostrarExito("Paciente registrado con éxito.");
+
             pacienteCombo.getItems().clear();
-            pacienteCombo.getItems().addAll(controladorPrincipal.listarPacientes().stream().map(Paciente::getCedula).toList());
-        } catch (Exception ex) {
-            mensajeLabel.setText("Error: " + ex.getMessage());
+            List<Paciente> pacientes = controladorPrincipal.listarPacientes();
+            pacienteCombo.getItems().addAll(pacientes != null ?
+                    pacientes.stream().map(Paciente::getCedula).toList() :
+                    Collections.emptyList());
+
+            cedulaField.clear();
+            nombreField.clear();
+            telefonoField.clear();
+            emailField.clear();
+            suscripcionCombo.getSelectionModel().clearSelection();
+        } catch (Exception e) {
+            Alerta.mostrarError(e.getMessage());
         }
     }
 
@@ -86,16 +125,33 @@ public class PanelPrincipalController {
     @FXML
     public void agendarCita() {
         try {
-            LocalDateTime fecha = LocalDateTime.parse(fechaField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            // Validar que se haya seleccionado una hora
+            if (horaCombo.getValue() == null) {
+                throw new Exception("Debe seleccionar una hora.");
+            }
+
+            LocalTime hora = Cita.parsearHora(horaCombo.getValue());
+            if (fechaPicker.getValue() == null) {
+                throw new Exception("La fecha es obligatoria.");
+            }
+
+            LocalDate fechaSeleccionada = fechaPicker.getValue();
+            LocalDateTime fecha = LocalDateTime.of(fechaSeleccionada, hora);
+
             Paciente paciente = controladorPrincipal.buscarPacientePorCedula(pacienteCombo.getValue());
-            if (paciente == null) throw new Exception("Paciente no encontrado");
             Servicio servicio = controladorPrincipal.buscarServicioPorNombre(servicioCombo.getValue());
-            if (servicio == null) throw new Exception("Servicio no encontrado");
-            Cita cita = new Cita(idCitaField.getText(), fecha, paciente, servicio);
+
+            Cita cita = new Cita(fecha, paciente, servicio);
             controladorPrincipal.agendarCita(cita);
-            mensajeCitaLabel.setText("Cita agendada con éxito.");
-        } catch (Exception ex) {
-            mensajeCitaLabel.setText("Error: " + ex.getMessage());
+
+            Alerta.mostrarExito("Cita agendada con éxito. ID: " + cita.getId());
+
+            fechaPicker.setValue(null);
+            horaCombo.getSelectionModel().clearSelection();
+            pacienteCombo.getSelectionModel().clearSelection();
+            servicioCombo.getSelectionModel().clearSelection();
+        } catch (Exception e) {
+            Alerta.mostrarError(e.getMessage());
         }
     }
 
@@ -116,10 +172,17 @@ public class PanelPrincipalController {
     @FXML
     public void cancelarCita() {
         try {
+            if (idCitaCancelarField.getText() == null || idCitaCancelarField.getText().trim().isEmpty()) {
+                throw new Exception("El ID de la cita es obligatorio para cancelar.");
+            }
+
             controladorPrincipal.cancelarCita(idCitaCancelarField.getText());
-            mensajeCancelarLabel.setText("Cita cancelada con éxito.");
-        } catch (Exception ex) {
-            mensajeCancelarLabel.setText("Error: " + ex.getMessage());
+
+            Alerta.mostrarExito("Cita cancelada con éxito.");
+
+            idCitaCancelarField.clear();
+        } catch (Exception e) {
+            Alerta.mostrarError(e.getMessage());
         }
     }
 

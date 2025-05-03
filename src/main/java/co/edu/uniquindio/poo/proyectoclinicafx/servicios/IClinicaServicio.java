@@ -11,6 +11,6 @@ public interface IClinicaServicio {
     List<Paciente> listarPacientes();
     void agendarCita(Cita cita) throws Exception;
     List<Cita> listarCitas();
-    void cancelarCita(String id);
+    void cancelarCita(String id) throws Exception;
     List<Servicio> listarServicios();
 }

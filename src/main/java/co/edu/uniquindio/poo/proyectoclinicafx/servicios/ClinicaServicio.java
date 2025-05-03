@@ -35,7 +35,10 @@ public class ClinicaServicio implements IClinicaServicio {
     }
 
     @Override
-    public void cancelarCita(String id) {
+    public void cancelarCita(String id) throws Exception {
+        if (id == null || id.trim().isEmpty()) {
+            throw new Exception("El ID de la cita es obligatorio para cancelar.");
+        }
         citaServicio.cancelarCita(id);
     }
 
@@ -44,14 +47,28 @@ public class ClinicaServicio implements IClinicaServicio {
         return clinica.getServicios();
     }
 
-    public Paciente buscarPacientePorCedula(String cedula) {
-        return pacienteServicio.buscarPorCedula(cedula);
+    public Paciente buscarPacientePorCedula(String cedula) throws Exception {
+        if (cedula == null || cedula.trim().isEmpty()) {
+            throw new Exception("La cédula es obligatoria para buscar un paciente.");
+        }
+        Paciente paciente = pacienteServicio.buscarPorCedula(cedula);
+        if (paciente == null) {
+            throw new Exception("Paciente con cédula " + cedula + " no encontrado.");
+        }
+        return paciente;
     }
 
-    public Servicio buscarServicioPorNombre(String nombre) {
-        return clinica.getServicios().stream()
+    public Servicio buscarServicioPorNombre(String nombre) throws Exception {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new Exception("El nombre del servicio es obligatorio para buscar.");
+        }
+        Servicio servicio = clinica.getServicios().stream()
                 .filter(s -> s.getNombre().equals(nombre))
                 .findFirst()
                 .orElse(null);
+        if (servicio == null) {
+            throw new Exception("Servicio " + nombre + " no encontrado.");
+        }
+        return servicio;
     }
 }

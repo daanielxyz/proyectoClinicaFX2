@@ -13,9 +13,12 @@ public class CitaRepositorio {
     private List<Cita> citas = new ArrayList<>();
 
     public void guardar(Cita cita) throws Exception {
+        if (cita == null) {
+            throw new IllegalArgumentException("La cita no puede ser nula.");
+        }
         for (Cita c : citas) {
             if (c.getFecha().equals(cita.getFecha())) {
-                throw new Exception("Cita se cruza con otra en el mismo horario.");
+                throw new Exception("Ya existe una cita programada para el mismo horario: " + cita.getFecha());
             }
         }
         citas.add(cita);
@@ -26,6 +29,9 @@ public class CitaRepositorio {
     }
 
     public void eliminar(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            return;
+        }
         citas.removeIf(cita -> cita.getId().equals(id));
     }
 }

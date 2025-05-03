@@ -25,7 +25,8 @@
     <Tab text="Agendar Cita" closable="false">
         <VBox spacing="10">
             <TextField fx:id="idCitaField" promptText="ID de la Cita"/>
-            <TextField fx:id="fechaField" promptText="Fecha (YYYY-MM-DD HH:MM)"/>
+            <DatePicker fx:id="fechaPicker" promptText="Seleccione la fecha"/>
+            <ComboBox fx:id="horaCombo" promptText="Seleccione la hora"/>
             <ComboBox fx:id="pacienteCombo" promptText="Seleccionar Paciente"/>
             <ComboBox fx:id="servicioCombo" promptText="Seleccionar Servicio"/>
             <Button fx:id="agendarBtn" text="Agendar" onAction="#agendarCita"/>
